@@ -1,0 +1,48 @@
+---
+title: "Submission for early feedback"
+subtitle: "Assignment 4 ETC5512"
+author: Xuanning Zhang
+format: html
+editor: visual
+---
+
+### Proposed Question
+
+How has the balance between wild-caught fisheries and aquaculture production in Australia changed over time? I want to examine whether Australia‘s seafood industry has undergone a structural shift away from capture fisheries toward fish farming, and whether this shift is consistent across states or concentrated in particular jurisdictions.
+
+### Proposed Data
+
+I will use the ABARES Australian Fisheries and Aquaculture Statistics dataset, published by the Australian Bureau of Agricultural and Resource Economics and Sciences (ABARES), an agency of the Australian Government Department of Agriculture, Fisheries and Forestry. <https://www.agriculture.gov.au/abares/research-topics/fisheries/fisheries-and-aquaculture-statistics>
+
+The dataset is released under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence and is updated annually.
+
+The key table use for research is
+
+-   **Table 2**: Fisheries and aquaculture production, Australia (national totals, wild-catch and aquaculture by volume and value)
+-   **Table 3**: Wild-caught fisheries production, Australia (species-level detail)
+-   **Table 4**: Aquaculture production, Australia (species-level detail)
+-   **Tables 5–11**: Fisheries and aquaculture production by state (NSW, VIC, QLD, SA, WA, TAS, NT)
+
+The time series runs from 1998 to 2024–25. Filtering to the national and state-level production tables from 2000–01 onward yields a manageable analysis dataset, to which I will add derived columns for total production and wild-catch/aquaculture shares. Full processing details, limitations will be shown in task 1.
+
+### Responses to checklist
+
+Scope
+
+The scope covers Australian fisheries production from 1998 to 2024–25. Since this data is organized by jurisdiction and year, it is suitable for both time-series comparisons within Australia and cross-state comparisons for specific years.
+
+Skills
+
+This dataset rquire the skills of filtering by year, renaming columns, pivoting to long format (pivot_longer()), and producing comparative time series and cross-sectional visualisations. And some unlearned skills like read_xlsx() and sheet selection.
+
+Data selection
+
+The dataset directly provided the amount of production and commodity via 1998 to 2025 and detailed data of each state in this timeline.
+
+Pseudo-code
+
+read_xlsx() the ABARES statistical tables, specifying the relevant sheet for each table; filter Year \>= 2000; rename jurisdiction, year, wild_catch_volume, aquaculture_volume, wild_catch_value, aquaculture_value; mutate total_production, wild_catch_share, and aquaculture_share; pivot_longer() production variables; create charts showing national wild-catch vs aquaculture trend over time, state-level aquaculture share comparison for the most recent year, and change in wild-catch share by state since 2000.
+
+Originality
+
+This analysis focuses on Australia's domestic production dynamics rather than reproducing the summary statistics already published in ABARES annual reports. The specific angle is to examine whether the national shift toward aquaculture is driven by particular states or reflects a broad trend across all jurisdictions, which is not addressed in the ABARES published infographics or reports. The topic is motivated by the practical relevance of seafood sustainability for Australia's environment and food supply.
