@@ -29,6 +29,24 @@ How has the balance between wild-caught fisheries and aquaculture production in 
 
 ## Data description
 
+The dataset use for this research is to analyze the structural shifts between wild-caught fisheries and aquaculture production in Australia. For more details, including licence information and definitions for the processed data used in analysis, refer to the `README` file and `data-dictionary`.
+
+### Dataset 1
+
+**Source**
+
+[Australian Bureau if Agricultural and Resource Economics and Science (ABARES), Department of Agriculture, Fisheries and Forestry.](https://www.agriculture.gov.au/abares/research-topics/fisheries/fisheries-and-aquaculture-statistics)
+
+**Content:** Annual production statistics reporting volume and vale in AUD for wild-caught fisheries and aquaculture in national level and by state. The time range is from 1998-99 to 2023-2024.
+
+**Data Type:** Census
+
+**Licence:** Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+**Limitation:** State-level table may apply slightly different species groupings through years which will make long-run comparisons less reliable.
+
+**Ethics & Privacy:** No individual or personal identifiable information included in this dataset, and this dataset is publicly available with no privacy concerns.
+
 <!-- Task 2 Tab: Writing your blogpost -->
 
 ## Blog post
