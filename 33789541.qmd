@@ -1,7 +1,7 @@
 ---
-title: "What is your blogpost title? Add it here??"
+title: "Wild Catch or Fish Farm? How Australia's Seafood Industry Is Changing"
 subtitle: "Assignment 4 ETC5512"
-author: "Who are you?? Add your name here"
+author: "Xuanning Zhang"
 format: html
 editor: visual
 ---
@@ -17,13 +17,13 @@ How has the balance between wild-caught fisheries and aquaculture production in 
 
 ## Sub-problem
 
-1.  Which species categories are most responsible for the growth in aquaculture production?
+1.  Which state are most responsible for the growth in aquaculture production?
 
 2.  Has Australia undergone a structural shift from capture fisheries toward aquaculture at the national level since 2000?
 
 ### Reason
 
--   Significance: Australian is a major fishing nation, the research could related with food sustainability and marine environmental policy.
+-   Significance: Australia is a major fishing nation, the research is related to food sustainability and marine environmental policy.
 
 -   Personal: Interested to environmental policy and fishery.
 
@@ -35,9 +35,9 @@ The dataset use for this research is to analyze the structural shifts between wi
 
 **Source**
 
-[Australian Bureau if Agricultural and Resource Economics and Science (ABARES), Department of Agriculture, Fisheries and Forestry.](https://www.agriculture.gov.au/abares/research-topics/fisheries/fisheries-and-aquaculture-statistics)
+[Australian Bureau if Agricultural and Resource Economics and Sciences (ABARES), Department of Agriculture, Fisheries and Forestry.](https://www.agriculture.gov.au/abares/research-topics/fisheries/fisheries-and-aquaculture-statistics)
 
-**Content:** Annual production statistics reporting volume and vale in AUD for wild-caught fisheries and aquaculture in national level and by state. The time range is from 1998-99 to 2023-2024.
+**Content:** Annual production statistics reporting volume and value in AUD for wild-caught fisheries and aquaculture in national level and by state. The time range is from 1998-99 to 2023-24.
 
 **Data Type:** Census
 
@@ -91,6 +91,8 @@ excel_sheets(here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"))
 :::
 
 ::: panel-tabset
+**Processing national data**
+
 ```{r, warning=FALSE}
 #read the national data in table 3
 #skip top 7 rows
@@ -100,13 +102,12 @@ raw_t3 <- read_xlsx(
   skip  = 7
 )
 
-#tidy out the commodity of wild-caught with the
-#unit of per kilo AUD.
+#tidy out the commodity of wild-caught with the unit of per kilo AUD.
 wild_national_val <- raw_t3 |> 
   slice(35) |> 
   select(-1, -2, -3) |> #first three colunm are useless
-  pivot_longer(everything(),  #transfer to long format, easy to read
-               names_to = "year",
+  pivot_longer(everything(),  #transfer to long format, easy to 
+               names_to = "year",  #read
                values_to = "wildcatch_val",
                values_transform = as.numeric) |> 
   filter(!is.na(wildcatch_val)) #drop the na value in 2024-25
@@ -120,6 +121,460 @@ wild_national_qty <- raw_t3 |>
                values_to = "wildcatch_vol",
                values_transform = as.numeric) |> 
   filter(!is.na(wildcatch_vol))
+
+
+#read the aquaculture data in table 4
+raw_t4 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 4",
+  skip  = 7
+)
+#same way to calculate the commodity of aquaculture fishery
+aqua_national_val <- raw_t4 |>
+  slice(24) |>
+  select(-1, -2, -3) |>
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |> filter(!is.na(aqua_val))
+#calculate the quantity of aquacultre fishery
+aqua_national_qty <- raw_t4 |>
+  slice(48) |>
+  select(-1, -2, -3) |>
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |> 
+  filter(!is.na(aqua_vol))
+
+#join all data together and save
+national_clean <- wild_national_val |>
+  left_join(aqua_national_val,  by = "year") |>
+  left_join(wild_national_qty,  by = "year") |>
+  left_join(aqua_national_qty,  by = "year") |>
+  mutate(
+    total_val           = wildcatch_val + aqua_val,
+    aqua_share_val      = aqua_val / total_val,
+    wildcatch_share_val = wildcatch_val / total_val,
+    total_vol           = wildcatch_vol + aqua_vol,
+    aqua_share_vol      = aqua_vol / total_vol,
+    wildcatch_share_vol = wildcatch_vol/ total_vol
+  )
+
+#save the clean data
+write_csv(national_clean, here("data", "processed", "national_production_clean.csv"))
+```
+
+**Processing data in state**
+
+```{r, warning=FALSE}
+#NSW
+raw_t5 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 5", skip = 7
+)
+#value
+nsw_wild_val <- raw_t5 |>
+  slice(37) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "NSW")
+
+nsw_auqa_val <- raw_t5 |>
+  slice(49) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "NSW")
+
+#quantity
+nsw_wild_vol <- raw_t5 |>
+  slice(87) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "NSW")
+
+nsw_auqa_vol <- raw_t5 |>
+  slice(99) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |>
+  filter(!is.na(aqua_vol)) |>
+  mutate(state = "NSW")
+
+#VIC
+raw_t6 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 6", skip = 7
+)
+#value
+vic_wild_val <- raw_t6 |>
+  slice(27) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "VIC")
+
+vic_auqa_val <- raw_t6 |>
+  slice(38) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "VIC")
+
+#quantity
+vic_wild_vol <- raw_t6 |>
+  slice(66) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "VIC")
+
+vic_auqa_vol <- raw_t6 |>
+  slice(77) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |>
+  filter(!is.na(aqua_vol)) |>
+  mutate(state = "VIC")
+#QLD
+raw_t7 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 7", skip = 7
+)
+#value
+qld_wild_val <- raw_t7 |>
+  slice(38) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "QLD")
+
+qld_auqa_val <- raw_t7 |>
+  slice(50) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "QLD")
+
+#quantity
+qld_wild_vol <- raw_t7 |>
+  slice(89) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "QLD")
+
+qld_auqa_vol <- raw_t7 |>
+  slice(101) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |>
+  filter(!is.na(aqua_vol)) |>
+  mutate(state = "QLD")
+
+#SA
+raw_t8 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 8", skip = 7
+)
+#value
+sa_wild_val <- raw_t8 |>
+  slice(29) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "SA")
+
+sa_auqa_val <- raw_t8 |>
+  slice(40) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "SA")
+
+#quantity
+sa_wild_vol <- raw_t8 |>
+  slice(70) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "SA")
+
+sa_auqa_vol <- raw_t8 |>
+  slice(81) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |>
+  filter(!is.na(aqua_vol)) |>
+  mutate(state = "SA")
+
+#WA
+raw_t9 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 9", skip = 7
+)
+#value
+wa_wild_val <- raw_t9 |>
+  slice(35) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "WA")
+
+wa_auqa_val <- raw_t9 |>
+  slice(45) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "WA")
+
+#quantity
+wa_wild_vol <- raw_t9 |>
+  slice(81) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "WA")
+
+wa_auqa_vol <- raw_t9 |>
+  slice(91) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |>
+  filter(!is.na(aqua_vol)) |>
+  mutate(state = "WA")
+
+#TAS
+raw_t10 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 10", skip = 7
+)
+#value
+tas_wild_val <- raw_t10 |>
+  slice(28) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "TAS")
+
+tas_auqa_val <- raw_t10 |>
+  slice(35) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "TAS")
+
+#quantity
+tas_wild_vol <- raw_t10 |>
+  slice(64) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "TAS")
+
+tas_auqa_vol <- raw_t10 |>
+  slice(71) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol)) |>
+  filter(!is.na(aqua_vol)) |>
+  mutate(state = "TAS")
+
+#NT
+raw_t11 <- read_xlsx(
+  here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"),
+  sheet = "Table 11", skip = 7
+)
+#value
+nt_wild_val <- raw_t11 |>
+  slice(25) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_val") |>
+  mutate(wildcatch_val = as.numeric(wildcatch_val)) |>
+  filter(!is.na(wildcatch_val)) |>
+  mutate(state = "NT")
+
+nt_auqa_val <- raw_t11 |>
+  slice(30) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_val") |>
+  mutate(aqua_val = as.numeric(aqua_val)) |>
+  filter(!is.na(aqua_val)) |>
+  mutate(state = "NT")
+
+#quantity
+nt_wild_vol <- raw_t11 |>
+  slice(56) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |> 
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "wildcatch_vol") |>
+  mutate(wildcatch_vol = as.numeric(wildcatch_vol)) |>
+  filter(!is.na(wildcatch_vol)) |>
+  mutate(state = "NT")
+
+nt_auqa_vol <- raw_t11 |>
+  slice(61) |>
+  select(-1, -2, -3) |>
+  mutate(across(everything(), as.character)) |>
+  pivot_longer(everything(),
+               names_to  = "year",
+               values_to = "aqua_vol") |>
+  mutate(aqua_vol = as.numeric(aqua_vol),
+         aqua_vol = replace_na(aqua_vol, 0)) |>
+  filter(year != "2024–25p") |> 
+  mutate(state = "NT")
+
+#merge all states' value
+all_wild_val <- bind_rows(
+  nsw_wild_val,
+  vic_wild_val, 
+  qld_wild_val,
+  sa_wild_val,
+  wa_wild_val,
+  tas_wild_val,
+  nt_wild_val)
+
+all_auqa_val <- bind_rows(
+  nsw_auqa_val,
+  vic_auqa_val,
+  qld_auqa_val,
+  sa_auqa_val,
+  wa_auqa_val,
+  tas_auqa_val,
+  nt_auqa_val)
+#merge all states' volumn
+all_wild_vol <- bind_rows(
+  nsw_wild_vol,
+  vic_wild_vol,
+  qld_wild_vol,
+  sa_wild_vol,
+  wa_wild_vol,
+  tas_wild_vol,
+  nt_wild_vol)
+
+all_auqa_vol <- bind_rows(
+  nsw_auqa_vol,
+  vic_auqa_vol,
+  qld_auqa_vol,
+  sa_auqa_vol,
+  wa_auqa_vol,
+  tas_auqa_vol,
+  nt_auqa_vol)
+
+#join all data to form a clean dataset
+state_clean <- all_wild_val |>
+  left_join(all_auqa_val, by = c("year", "state")) |>
+  left_join(all_wild_vol, by = c("year", "state")) |>
+  left_join(all_auqa_vol, by = c("year", "state")) |>
+  mutate(
+    total_val      = wildcatch_val + aqua_val,
+    aqua_share_val = aqua_val / total_val,
+    total_vol      = wildcatch_vol + aqua_vol,
+    aqua_share_vol = aqua_vol / total_vol
+  )
+#save dataset
+write_csv(state_clean, here("data", "processed", "state_production_clean.csv"))
 ```
 
 <!-- Task 2 Tab: Writing your blogpost -->
