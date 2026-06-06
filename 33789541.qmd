@@ -46,9 +46,7 @@ The dataset use for this research is to analyze the structural shifts between wi
 **Limitation:** State-level table may apply slightly different species groupings through years which will make long-run comparisons less reliable.
 
 **Ethics & Privacy:** No individual or personal identifiable information included in this dataset, and this dataset is publicly available with no privacy concerns.
-:::
 
-::: panel-tabset
 ### Dataset 2
 
 **Source:** [Australian Bureau of Statistics (ABS), Australian Statistical Geography Standard (ASGS).](https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-3-july-2021-june-2026/access-and-downloads/digital-boundary-files)
@@ -62,9 +60,7 @@ The dataset use for this research is to analyze the structural shifts between wi
 **Limitation:** Boundaries are based on 2021 edition, minor administrative boundary change these years are not reflected.
 
 **Ethics & Privacy:** No privacy concerns, geographic boundary data only.
-:::
 
-::: panel-tabset
 ## Data Download and Processing
 
 ```{r, message=FALSE}
@@ -88,9 +84,7 @@ The ABARES statistics file must download manually from ABARES portal:
 ```{r}
 excel_sheets(here("data", "raw", "AFAS_Data_2024-25_v1.0.0.xlsx"))
 ```
-:::
 
-::: panel-tabset
 **Processing national data**
 
 ```{r, warning=FALSE}
@@ -579,7 +573,7 @@ write_csv(state_clean, here("data", "processed", "state_production_clean.csv"))
 
 <!-- Task 2 Tab: Writing your blogpost -->
 
-## Blog post
+# Blog post
 
 ### What's in this section
 
@@ -598,7 +592,7 @@ There is no strict structure for you to follow. However, here is a skeleton stru
 
 <!-- Task 3 Tab: Behind the Scenes -  -->
 
-## Behind the Scenes
+# Behind the Scenes
 
 ### What's in this section
 
