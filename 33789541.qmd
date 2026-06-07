@@ -17,7 +17,7 @@ How has the balance between wild-caught fisheries and aquaculture production in 
 
 ## Sub-problem
 
-1.  Which state are most responsible for the growth in aquaculture production?
+1.  Which states are most responsible for the growth in aquaculture production?
 
 2.  Has Australia undergone a structural shift from capture fisheries toward aquaculture at the national level since 2000?
 
@@ -29,13 +29,13 @@ How has the balance between wild-caught fisheries and aquaculture production in 
 
 ## Data description
 
-The dataset use for this research is to analyze the structural shifts between wild-caught fisheries and aquaculture production in Australia. For more details, including licence information and definitions for the processed data used in analysis, refer to the `README` file and `data-dictionary`.
+The datasets use for this research is to analyze the structural shifts between wild-caught fisheries and aquaculture production in Australia. For more details, including licence information and definitions for the processed data used in analysis, refer to the `README` file and `data-dictionary`.
 
 ### Dataset 1
 
 **Source**
 
-[Australian Bureau if Agricultural and Resource Economics and Sciences (ABARES), Department of Agriculture, Fisheries and Forestry.](https://www.agriculture.gov.au/abares/research-topics/fisheries/fisheries-and-aquaculture-statistics)
+[Australian Bureau of Agricultural and Resource Economics and Sciences (ABARES), Department of Agriculture, Fisheries and Forestry.](https://www.agriculture.gov.au/abares/research-topics/fisheries/fisheries-and-aquaculture-statistics)
 
 **Content:** Annual production statistics reporting volume and value in AUD for wild-caught fisheries and aquaculture in national level and by state. The time range is from 1998-99 to 2023-24.
 
@@ -71,7 +71,7 @@ library(sf)
 library(here)
 ```
 
-**Dataset1**
+#### Data 1
 
 The ABARES statistics file must download manually from ABARES portal:
 
@@ -571,6 +571,26 @@ state_clean <- all_wild_val |>
 write_csv(state_clean, here("data", "processed", "state_production_clean.csv"))
 ```
 
+#### Data 2
+
+The ABS boundary shapefile must be manually downloaded:
+
+1.  Visit [ABS Digital Boundary Files](https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs/edition-3-july-2021-june-2026/access-and-downloads/digital-boundary-files)
+
+2.  Download **"State and Territory — 2021 — Shapefile"**.
+
+3.  Unzip and save all files to `data/raw/STE_2021_AUST_SHP_GDA2020/`
+
+**Data processing**
+
+```{r}
+#geomotry file does not need tidy, read only
+states_sf <- st_read(
+  here("data", "raw", "STE_2021_AUST_SHP_GDA2020",
+       "STE_2021_AUST_GDA2020.shp")
+)
+```
+
 <!-- Task 2 Tab: Writing your blogpost -->
 
 # Blog post
@@ -585,10 +605,102 @@ There is no strict structure for you to follow. However, here is a skeleton stru
 
 1.  Title (is set at the top of this document)
 2.  Motivation\
-3.  Data\
-4.  Analysis\
-5.  Conclusions\
-6.  References
+3.  Data
+
+```{r, echo=FALSE}
+national_long <- national_clean |>
+  mutate(year_num = as.numeric(substr(year, 1, 4))) |>
+  select(year_num, wildcatch_val, aqua_val) |>
+  pivot_longer(cols = c(wildcatch_val, aqua_val),
+               names_to  = "type",
+               values_to = "value") |>
+  mutate(
+    type= ifelse(type== "wildcatch_val", "wild-caught", "Aquaculture"),
+    value_billion= value/ 1000000
+  )
+
+ggplot(national_long, aes(x= year_num, y=value_billion, fill= type))+
+  geom_area()+
+  labs(
+    title= "Australia's Fisheries Production Value (1998-2023)",
+    x = "Year",
+    y= "Production Value (AUD billion)"
+  )+
+  theme_minimal()
+```
+
+
+
+```{r, echo=FALSE}
+ggplot(national_clean, aes( x= as.numeric(substr(year, 1, 4)),
+                            y= aqua_share_val))+
+  geom_line(linewidth = 1)+
+  geom_point(size=2)+
+  scale_y_continuous(labels = scales::percent)+
+  labs(title = "Aquaculture's Share of Total Fisheries Value in Australia",
+       x= "Year",
+       y= "Aquaculture Share (%)")+
+  theme_minimal()
+```
+
+
+```{r, echo=FALSE}
+#plot in map
+
+#pick the last data
+state_lastest <- state_clean |> 
+  filter(year == max(year))
+#create a table of states
+state_tbl <- tibble(
+  state = c("NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT"),
+  STE_NAME21 = c("New South Wales", "Victoria", "Queensland",
+                 "South Australia", "Western Australia",
+                 "Tasmania", "Northern Territory")
+)
+#join the table with full name and abbriviation of states
+map_data <- state_lastest |> 
+  left_join(state_tbl, by= "state") |> 
+  right_join(states_sf, by= "STE_NAME21")
+
+#draw the map
+ggplot(map_data)+
+  geom_sf(aes(fill=aqua_share_val, geometry= geometry))+
+  labs(
+    title= "Aquaculture Share of Total Fisheries Value by State (2023-24)",
+    fill= "Aquaculture Share"
+  )
+```
+
+```{r,echo=FALSE}
+#select the 2000-1 and 2023 data
+state_dumbbell <- state_clean |>
+  filter(year %in% c("2000–01", max(year))) |>
+  select(state, year, aqua_share_val) |>
+  mutate(period = ifelse(year== "2000–01", "Year 2000", "Year 2023-24"))
+#transfer to wide format
+state_wide <- state_dumbbell |>
+  select(state, period, aqua_share_val) |>
+  pivot_wider(names_from= period,
+              values_from= aqua_share_val)
+#create plot
+ggplot(state_wide) +
+  geom_segment(aes(x= `Year 2000`, xend = `Year 2023-24`,
+                   y= state, yend = state),
+               colour = "steelblue", linewidth = 1) +
+  geom_point(aes(x= `Year 2000`, y = state), colour = "red", size = 4) +
+  geom_point(aes(x= `Year 2023-24`, y = state), colour = "grey30", size = 4) +
+  scale_x_continuous(labels = scales::percent) +
+  labs(
+    title= "Change in Aquaculture Share by State (2000–01 vs 2023–24)",
+    x= "Aquaculture Share of Total Fisheries Value",
+    caption= "Red = 2000–01, Grey = 2023–24"
+  ) +
+  theme_minimal()
+```
+
+1.  Analysis\
+2.  Conclusions\
+3.  References
 
 <!-- Task 3 Tab: Behind the Scenes -  -->
 
