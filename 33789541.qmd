@@ -595,19 +595,23 @@ states_sf <- st_read(
 
 # Blog post
 
-### What's in this section
+## Wild Catch or Fish Farm? How Australia's Seafood Industry Is Changing
 
-Here is where you should write your blogpost! (Task 2)
+### What Are Wild-Caught Fisheries and Aquaculture?
+Before delving into the data, it would be helpful to understand what we are comparing. Wild-caught fisheries refer to fish and seafood harvested directly from the ocean, rivers and lakes. Australia has one of the world's largest exclusive economic zoes which covering around 8.2 million square kilometers, and its whild-caught fisheries including a wide range of species from southern bluefin tuna in South Australian to rock lobsters off the coast of Western Australia (ABARES, 2025).
 
-### Blogpost Structure
+In contrast, aquaculture is the rearing of aquatic organisms in controlled environments like offshore net pens, inland ponds and onshore tanks. In Australia, Atlantic salmon farmed in the cold and deep waters of Tasmania dominates the sector in terms of production value, there also have alongside oysters, mussels and barramundi (ABARES, 2025).
 
-There is no strict structure for you to follow. However, here is a skeleton structure you may find helpful.
+Both industries are of significant economic importance. ABARES (2025) has pointed out that Australian fishing and aquaculture industries collectively produces over $ 3.8 billion output value during 2023-24 financial year which supporting fishing dependent communities across the country.
 
-1.  Title (is set at the top of this document)
-2.  Motivation\
-3.  Data
+### Importance of Analytics on Balance of Wild-caught and Aquaculture
+The impact of how a country obtains its seafood extends far beyond the dinner table. Aquaculture could provide a more stable food supply and reduce pressure on wild fish population in theory (Naylor et al., 2000).
+However, large-scale salmon farming will bring environmental costs like nutrient pollution and biosecurity risks to wild populations (Buschmann et al., 2006). Also, the national shift towards aquaculture means communities which rely on wild-caught fish will gradually lose their economic.
+
+### Data Analysis
 
 ```{r, echo=FALSE}
+#| label: fig-area
 national_long <- national_clean |>
   mutate(year_num = as.numeric(substr(year, 1, 4))) |>
   select(year_num, wildcatch_val, aqua_val) |>
@@ -629,9 +633,10 @@ ggplot(national_long, aes(x= year_num, y=value_billion, fill= type))+
   theme_minimal()
 ```
 
-
+@fig-area show the total value of Australian fisheries production from 1998 to 2023 in financial years, the data has been separated into wild-caught and aquaculture. Wild capture was overwhelmingly dominant in late 1990s. However, the contribution of aquaculture grew steadily in las two decades while wild capture maintain largely unchanged. The value of aquaculture had surpassed that of wild caught which confirmed by ABARES (2025).
 
 ```{r, echo=FALSE}
+#| label: fig-line
 ggplot(national_clean, aes( x= as.numeric(substr(year, 1, 4)),
                             y= aqua_share_val))+
   geom_line(linewidth = 1)+
@@ -643,8 +648,26 @@ ggplot(national_clean, aes( x= as.numeric(substr(year, 1, 4)),
   theme_minimal()
 ```
 
+@fig-line has clearly point out the structural transformation. In 1998, there was only 28% of total fisheries value, wild-caught fisheries has dominated the industry by a wild margin. But in next 20 years, the aquaculture's share climed steady and reached around 57% of total by 2023 and firstly broke 50% in 2020 (ABARES, 2025).
+This argument has been strengthened by @fig-vol. Even the production is measured by volume rather than value, aquaculture's share has confirmed that the transition is not the pricing effect driven by premium salmon prices, but reflect the structural growth in framed output.
+In summary, both value and volume has pointed the same direction: Australia's seafood industry has shifted from wild-caught to aquaculture, and the trend shows no sign of reversing till now.
+```{r, echo=FALSE}
+#| label: fig-vol
+ggplot(national_clean, aes(x = as.numeric(substr(year, 1, 4)),
+                           y = aqua_share_vol)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title= "Aquaculture's Share of Total Fisheries Volume in Australia",
+    x= "Year",
+    y= "Aquaculture Share (%)"
+  ) +
+  theme_minimal()
+```
 
 ```{r, echo=FALSE}
+#| label: fig-map
 #plot in map
 
 #pick the last data
@@ -672,6 +695,7 @@ ggplot(map_data)+
 ```
 
 ```{r,echo=FALSE}
+#| label: fig-dumbbell
 #select the 2000-1 and 2023 data
 state_dumbbell <- state_clean |>
   filter(year %in% c("2000–01", max(year))) |>
