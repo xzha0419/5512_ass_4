@@ -607,7 +607,7 @@ Both industries are of significant economic importance. ABARES (2025) has pointe
 
 ### Importance of Analytics on Balance of Wild-caught and Aquaculture
 
-The impact of how a country obtains its seafood extends far beyond the dinner table. Aquaculture could provide a more stable food supply and reduce pressure on wild fish population in theory (Naylor et al., 2000). However, large-scale salmon farming will bring environmental costs like nutrient pollution and biosecurity risks to wild populations (Buschmann et al., 2006). Also, the national shift towards aquaculture means communities which rely on wild-caught fish will gradually lose their economic.
+The impact of how a country obtains its seafood extends far beyond the dinner table. Aquaculture could provide a more stable food supply and reduce pressure on wild fish population in theory (Naylor et al., 2000). However, large-scale salmon farming will bring environmental costs like nutrient pollution and biosecurity risks to wild populations (Buschmann et al., 2006). Also, the national shift towards aquaculture means communities which rely on wild-caught fish will gradually lose their economic viability.
 
 ### Data Analysis
 
@@ -634,7 +634,7 @@ ggplot(national_long, aes(x= year_num, y=value_billion, fill= type))+
   theme_minimal()
 ```
 
-@fig-area show the total value of Australian fisheries production from 1998 to 2023 in financial years, the data has been separated into wild-caught and aquaculture. Wild capture was overwhelmingly dominant in late 1990s. However, the contribution of aquaculture grew steadily in las two decades while wild capture maintain largely unchanged. The value of aquaculture had surpassed that of wild caught which confirmed by ABARES (2025).
+@fig-area shows the total value of Australian fisheries production from 1998 to 2023 in financial years, the data has been separated into wild-caught and aquaculture. Wild capture was overwhelmingly dominant in late 1990s. However, the contribution of aquaculture grew steadily in las two decades while wild capture maintain largely unchanged. The value of aquaculture had surpassed that of wild caught which confirmed by ABARES (2025).
 
 ```{r, echo=FALSE}
 #| label: fig-line
@@ -649,7 +649,7 @@ ggplot(national_clean, aes( x= as.numeric(substr(year, 1, 4)),
   theme_minimal()
 ```
 
-@fig-line has clearly point out the structural transformation. In 1998, there was only 28% of total fisheries value, wild-caught fisheries has dominated the industry by a wild margin. But in next 20 years, the aquaculture's share climed steady and reached around 57% of total by 2023 and firstly broke 50% in 2020 (ABARES, 2025). This argument has been strengthened by @fig-vol. Even the production is measured by volume rather than value, aquaculture's share has confirmed that the transition is not the pricing effect driven by premium salmon prices, but reflect the structural growth in framed output. In summary, both value and volume has pointed the same direction: Australia's seafood industry has shifted from wild-caught to aquaculture, and the trend shows no sign of reversing till now.
+@fig-line has clearly point out the structural transformation. In 1998, there was only 28% of total fisheries value, wild-caught fisheries has dominated the industry by a wide margin. But in next 20 years, the aquaculture's share climbed steady and reached around 57% of total by 2023 and firstly broke 50% in 2020 (ABARES, 2025). This argument has been strengthened by @fig-vol. Even the production is measured by volume rather than value, aquaculture's share has confirmed that the transition is not the pricing effect driven by premium salmon prices, but reflect the structural growth in framed output. In summary, both value and volume has pointed the same direction: Australia's seafood industry has shifted from wild-caught to aquaculture, and the trend shows no sign of reversing till now.
 
 ```{r, echo=FALSE}
 #| label: fig-vol
@@ -730,7 +730,7 @@ ggplot(state_wide) +
 
 The main question to answer in this section is: Has Australia undergone a structural shift from wild-caught to aquaculture? and whether this shift consistent across states. The data has provided clear answer to both.
 
--   Australia has crossed the structural turning point. Aqaculture's share of total fisheries value rose from 28% in 1999 to 57% by 2024, and surpassing wild-catch for the first time in 2020. Both production value or volume point in the same direction which has confirmed it is a genuine industry transformation rather than a pricing effect.
+-   Australia has crossed the structural turning point. Aquaculture's share of total fisheries value rose from 28% in 1999 to 57% by 2024, and surpassing wild-catch for the first time in 2020. Both production value or volume point in the same direction which has confirmed it is a genuine industry transformation rather than a pricing effect.
 
 -   This shift was geographically concentrated rather than nationwide. Driven by the Atlantic salmon aquaculture industry, the change was most pronounced in Tasmania. The significant shift was also happened in Victoria and Queensland, while Western Australia remained primarily reliant on wild-caught fish throughout the period.
 
@@ -742,9 +742,31 @@ As the aquaculture industry continues to grow, issues of environmental regulatio
 
 # Behind the Scenes
 
-### What's in this section
+## Question 5
 
-Here is where you should tell us about your reflection on your analysis (Task 3).
+The most repetitive part in this assignment was extracting data from the ABARES excel. The data of seven states was stored in different tables and there required four separate extractions: wild-caught value and volume, aquaculture value and volume, all of these variables need to use the loop of slice(), select(), pivot_longer(), and mutate(). This caused a lot of similar chunks but need to check each one before running.
 
-Again, these are the details about **your** perspective and the gritty details behind the scenes of your analysis.
+## Question 6
+
+The main challenge is in the ABARES excel file, the year labels has used en-dashes rather than standard hyphens and eventually led to returned empty value fo filter function with out error reporting. I have spent a lot of time to find the issue. I also proud to use the slice function to solve this problem in a cleanly way. Also, i have learned a new skill which is how to processing the data inside the excel file, and that is the skills i have not learned before.
+
+## Question 7
+
+In the processing of state-level code is high repetitive and could be much cleaner if there could have a reusable function. Also, this analyse only focus on value and volume of fisheries, if it is able to connecting with the employment data, there would be able to analyse the relationship on economy. Furthermore, the state table in ABARES has slight difference of species groupings across years which will lead to slight different in long-term comparing.
+
+## Question 8
+
+Generate AI has been used in this assignment for debug, providing suggestions, analysing plots and working on code frame, each output has been carfully reviewed. [GPT](https://chatgpt.com/share/6a2b99e9-4788-83ec-8449-876c49e21bb0)
+
+## Question 9
+
+The iterative development of this assignment is tracked trough GitHub repository at https://github.com/xzha0419/5512_ass_4.git.
+
+1.  `560fafe`: this commit initialized the repository and finished part of the task 1, confirmed the structure of the project. In this commit, i only read and processed national data.
+
+2.  `1945560`: Dataset 1 has been finished in this commit, it record the volume and value in seven states, i also solved the en-dash issue in year labels by switching label from filter to slice, and added character transform in mutate function.
+
+3.  `43a1e8c`: finished all plots in task 2, including a stacked area chart, a line chart, a map and a dumbbell plot, the map was not initially in the plan of this assignment because it need an additional dataset.
+
+4.  a484820: The description of plot 1\~3 has been finished, i have added an extra plot in this part for the volume trend in national perspective, this is aims to proof that the trend shift is not caused by the price change.
 :::
