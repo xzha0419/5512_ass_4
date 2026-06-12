@@ -598,15 +598,16 @@ states_sf <- st_read(
 ## Wild Catch or Fish Farm? How Australia's Seafood Industry Is Changing
 
 ### What Are Wild-Caught Fisheries and Aquaculture?
+
 Before delving into the data, it would be helpful to understand what we are comparing. Wild-caught fisheries refer to fish and seafood harvested directly from the ocean, rivers and lakes. Australia has one of the world's largest exclusive economic zoes which covering around 8.2 million square kilometers, and its whild-caught fisheries including a wide range of species from southern bluefin tuna in South Australian to rock lobsters off the coast of Western Australia (ABARES, 2025).
 
 In contrast, aquaculture is the rearing of aquatic organisms in controlled environments like offshore net pens, inland ponds and onshore tanks. In Australia, Atlantic salmon farmed in the cold and deep waters of Tasmania dominates the sector in terms of production value, there also have alongside oysters, mussels and barramundi (ABARES, 2025).
 
-Both industries are of significant economic importance. ABARES (2025) has pointed out that Australian fishing and aquaculture industries collectively produces over $ 3.8 billion output value during 2023-24 financial year which supporting fishing dependent communities across the country.
+Both industries are of significant economic importance. ABARES (2025) has pointed out that Australian fishing and aquaculture industries collectively produces over \$ 3.8 billion output value during 2023-24 financial year which supporting fishing dependent communities across the country.
 
 ### Importance of Analytics on Balance of Wild-caught and Aquaculture
-The impact of how a country obtains its seafood extends far beyond the dinner table. Aquaculture could provide a more stable food supply and reduce pressure on wild fish population in theory (Naylor et al., 2000).
-However, large-scale salmon farming will bring environmental costs like nutrient pollution and biosecurity risks to wild populations (Buschmann et al., 2006). Also, the national shift towards aquaculture means communities which rely on wild-caught fish will gradually lose their economic.
+
+The impact of how a country obtains its seafood extends far beyond the dinner table. Aquaculture could provide a more stable food supply and reduce pressure on wild fish population in theory (Naylor et al., 2000). However, large-scale salmon farming will bring environmental costs like nutrient pollution and biosecurity risks to wild populations (Buschmann et al., 2006). Also, the national shift towards aquaculture means communities which rely on wild-caught fish will gradually lose their economic.
 
 ### Data Analysis
 
@@ -648,9 +649,8 @@ ggplot(national_clean, aes( x= as.numeric(substr(year, 1, 4)),
   theme_minimal()
 ```
 
-@fig-line has clearly point out the structural transformation. In 1998, there was only 28% of total fisheries value, wild-caught fisheries has dominated the industry by a wild margin. But in next 20 years, the aquaculture's share climed steady and reached around 57% of total by 2023 and firstly broke 50% in 2020 (ABARES, 2025).
-This argument has been strengthened by @fig-vol. Even the production is measured by volume rather than value, aquaculture's share has confirmed that the transition is not the pricing effect driven by premium salmon prices, but reflect the structural growth in framed output.
-In summary, both value and volume has pointed the same direction: Australia's seafood industry has shifted from wild-caught to aquaculture, and the trend shows no sign of reversing till now.
+@fig-line has clearly point out the structural transformation. In 1998, there was only 28% of total fisheries value, wild-caught fisheries has dominated the industry by a wild margin. But in next 20 years, the aquaculture's share climed steady and reached around 57% of total by 2023 and firstly broke 50% in 2020 (ABARES, 2025). This argument has been strengthened by @fig-vol. Even the production is measured by volume rather than value, aquaculture's share has confirmed that the transition is not the pricing effect driven by premium salmon prices, but reflect the structural growth in framed output. In summary, both value and volume has pointed the same direction: Australia's seafood industry has shifted from wild-caught to aquaculture, and the trend shows no sign of reversing till now.
+
 ```{r, echo=FALSE}
 #| label: fig-vol
 ggplot(national_clean, aes(x = as.numeric(substr(year, 1, 4)),
@@ -665,6 +665,8 @@ ggplot(national_clean, aes(x = as.numeric(substr(year, 1, 4)),
   ) +
   theme_minimal()
 ```
+
+@fig-map has transfer the focus form national trend to states. The map show the share of aquaculture of total fisheries value in 2023-24 in each states. Tasmania stands out as an outlier, its fisheries are mostly from its aquaculture which started from the rapid expansion of Atlantic salmon farming in 1990s (ABARES, 2025). South Australia and Victoria has a higher aquaculture share, but Western Australian and Queensland are still rely primarily on wild-caught fish. The Northern Territory records the lowest aquacultre share of all jurisdictions. The pattern of this geographic reveals that Australian's national shift to aquaculture is not evenly distributed, but heavily concentrated in the southern states and mainly in Tasmania.
 
 ```{r, echo=FALSE}
 #| label: fig-map
@@ -722,9 +724,19 @@ ggplot(state_wide) +
   theme_minimal()
 ```
 
-1.  Analysis\
-2.  Conclusions\
-3.  References
+@fig-dumbbe has shown the change of aquaculture share in each states from 2000-2023, the red point means the beginning and grey point is the recent year. Tasmania recorded the largest shift of any jurisdiction, growing from 35% to over 90% which has single-handedly reshaped the national average (ABARES, 2025). Victoria also has a significant change which increased from 10% to 65%. Comparing with Victoria, Western Australia's aquaculture share maintained steady. Notably, South Australia and the Northern Territory entered 2000 already above 50%, which means their aquaculture was well established there before the national trend accelerated.
+
+## Conclusion
+
+The main question to answer in this section is: Has Australia undergone a structural shift from wild-caught to aquaculture? and whether this shift consistent across states. The data has provided clear answer to both.
+
+-   Australia has crossed the structural turning point. Aqaculture's share of total fisheries value rose from 28% in 1999 to 57% by 2024, and surpassing wild-catch for the first time in 2020. Both production value or volume point in the same direction which has confirmed it is a genuine industry transformation rather than a pricing effect.
+
+-   This shift was geographically concentrated rather than nationwide. Driven by the Atlantic salmon aquaculture industry, the change was most pronounced in Tasmania. The significant shift was also happened in Victoria and Queensland, while Western Australia remained primarily reliant on wild-caught fish throughout the period.
+
+-   The national trend has masked the difference between states. South Australia and the Northern Territory had already shifted to aquaculture-dominated as early as 2000, while Western Australia saw virtually no change over the 25-year period. Viewing Australia as a single entity risks overlooking the distinctly different development trajectories of its various fishing regions—and the corresponding policy needs.
+
+As the aquaculture industry continues to grow, issues of environmental regulation and feed sustainability will become increasingly pressing (Naylor et al., 2000). Buschmann et al. (2006) also pointed out that the bio-security risks posed by large-scale salmon farming to wild fish populations remain a topic of significant concern in Australian waters. Furthermore, the future of wild-caught populations which particularly in regions like WA also deserves equal attention at the policy level.
 
 <!-- Task 3 Tab: Behind the Scenes -  -->
 
